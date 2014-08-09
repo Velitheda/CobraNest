@@ -5,7 +5,7 @@ package com.example.snake;
 
 public class SnakeConstants { 
 	
-	public static final int SIZE = 9;
+	public static final int SIZE = 12;
 
 	//these integers are simply an easy way of representing directions
     public static final int LEFT = 0;

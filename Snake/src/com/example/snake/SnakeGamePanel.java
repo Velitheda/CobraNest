@@ -112,10 +112,10 @@ public class SnakeGamePanel extends SurfaceView implements
 		won = false;
 		wantToRestart = false;
 		restartDelay = 3;
-		timerDelay = 8;// should be ten
+		timerDelay = 10;
 		requiredPlayerLength = 12;
 		startingLength = 5;// length actually in snake class
-		numTeleports = 4;
+		numTeleports = 0;
 		numSpiders = 1;
 		numBarriers = 3;
 		numStrawberries = 9;
@@ -526,8 +526,8 @@ public class SnakeGamePanel extends SurfaceView implements
 
 	public void drawInfo(Canvas canvas, Paint paint) {
 		paint.setColor(Color.WHITE);
-		paint.setTextSize(12);
-		canvas.drawText("Level " + level, 3, 12, paint);
+		paint.setTextSize(20);
+		canvas.drawText("Level " + level, 6, 20, paint);
 	}
 
 	public void drawPlayer(Canvas canvas) {
