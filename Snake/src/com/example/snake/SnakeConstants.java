@@ -5,7 +5,7 @@ package com.example.snake;
 
 public class SnakeConstants { 
 	
-	public static final int SIZE = 12;
+	public static final int SIZE = 17;
 
 	//these integers are simply an easy way of representing directions
     public static final int LEFT = 0;
@@ -19,14 +19,14 @@ public class SnakeConstants {
     public static final int SNAKE_START_Y = 0;
 
     //The starting speed of the timer
-    public static final int TIMER_START = 150;
+    public static final int TIMER_START = 50;
     //The amount things speed up by each time a new level is reached
-    public static final int TIMER_CHANGE = 10;
+    public static final int TIMER_CHANGE = 4;
 
     public static final int MAX_LEVEL = 10;
 
     //The number of segments in the barriers
-    public static final int BARRIER_LENGTH = 20;
+    public static final int BARRIER_LENGTH = 12;
     //The rough number of times a barrier will change direction when it is being generated
 	public static final int BARRIER_CHANGE = BARRIER_LENGTH / 10;
 

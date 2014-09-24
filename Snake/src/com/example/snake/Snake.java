@@ -40,7 +40,7 @@ public class Snake {
 
 		// this is not setting it clear of barriers
 		initialiseSnake(getRandomXPostion(), getRandomYPostion());
-		dieIfHitWall = true;
+		dieIfHitWall = false;
 	}
 
 	public void initialiseSnake(int x, int y) {

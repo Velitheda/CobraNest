@@ -3,7 +3,6 @@
 // and is the main and only activity for the program.  It then starts a 
 // view with the game contained inside.
 // It also creates an alert for when the game is paused offering a chance to either resume or restart.
-// However, there are bugs in the code trying to resume, and I have not been able to resolve them yet.
 package com.example.snake;
 
 import android.app.Activity;
@@ -24,6 +23,7 @@ public class SnakeMain extends Activity {
 
 	private static final String TAG = SnakeMain.class.getSimpleName();
 	private SnakeGamePanel gamePanel;
+	private boolean firstTime = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +39,6 @@ public class SnakeMain extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		
-		if (savedInstanceState == null) {
-			gamePanel = new SnakeGamePanel(this);
-			setContentView(gamePanel);
-
-			Log.w(this.getClass().getName(), "SIS is null");
-		} else {
-			// we are being restored: resume a previous game
-			// setContentView(gamePanel);
-			Log.w(this.getClass().getName(), "SIS is nonnull");
-		}
-
 		gamePanel = new SnakeGamePanel(this);
 
 		setContentView(gamePanel);
@@ -58,19 +46,8 @@ public class SnakeMain extends Activity {
 		Log.d(TAG, "View added");
 	}
 
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		Log.d(TAG, "Saving");
-	}
-
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		Log.d(TAG, "Restoring instance state");
-		super.onRestoreInstanceState(savedInstanceState);
-	}
-
 	protected void onPause() {
 		super.onPause();
-		// gamePanel.setPaused(true);
 		gamePanel.pause();
 		Log.d(TAG, "Pausing activity");
 
@@ -79,13 +56,11 @@ public class SnakeMain extends Activity {
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "Resuming activity");
-		// gamePanel.setPaused(false);
-		// setContentView(gamePanel);
-		// gamePanel.setPaused(false);
-		gamePanel.setPaused(true);
-		gamePanel.resume();
-
-		createAlert();
+		if(firstTime){
+			firstTime = false;
+		}else{
+			createAlert();
+		}
 
 	}
 
@@ -106,21 +81,15 @@ public class SnakeMain extends Activity {
 		Log.d(TAG, "Stopping ...");
 		super.onStop();
 	}
-
+/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		// getMenuInflater().inflate(R.menu.snake_main, menu);
-		Log.d(TAG, "Menu pressed");
-		if (gamePanel.getPaused())// unnecessary?
-			gamePanel.setPaused(false);
-		else {
-			gamePanel.setPaused(true);
-			createAlert();
-		}
+		
 		return false;// normally true when commented line works
 	}
-
+*/
 	public void onBackPressed() {
 		Log.d(TAG, "Back button pressed");
 		super.onBackPressed();
@@ -137,7 +106,9 @@ public class SnakeMain extends Activity {
 		Log.d(TAG, "Hi");
 		if (keyCode == KeyEvent.KEYCODE_MENU
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			// onPause();
+			Log.d(TAG, "Menu pressed");
+			gamePanel.pause();
+			createAlert();
 			return true;
 			// }else if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() ==
 			// KeyEvent.ACTION_DOWN){
@@ -169,6 +140,7 @@ public class SnakeMain extends Activity {
 					public void onClick(DialogInterface dialog, int id) {
 						Log.d(TAG, "Resume pressed");
 						dialog.cancel();
+						//setContentView(gamePanel);
 						gamePanel.resume();
 					}
 				});
@@ -176,7 +148,11 @@ public class SnakeMain extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
+						//setContentView(gamePanel);
+						///resets game, need to restart thread now
 						gamePanel.start();
+						gamePanel.startThread();
+						
 					}
 				});
 

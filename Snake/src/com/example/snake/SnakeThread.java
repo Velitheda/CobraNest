@@ -1,4 +1,6 @@
-//A class for a thread that I copied mostly from an internet tutorial
+//This class handles the thread
+// Jasmine Vickery
+
 
 package com.example.snake;
 
@@ -11,7 +13,8 @@ public class SnakeThread extends Thread{
 	private static final String TAG = SnakeThread.class.getSimpleName();
 	private SurfaceHolder surfaceHolder;
 	private SnakeGamePanel gamePanel;
-	private boolean running;
+	private boolean paused;
+	private Object pauseLock = new Object();
 	
 	public SnakeThread(SurfaceHolder surfaceHolder, SnakeGamePanel gamePanel){
 		super();
@@ -19,19 +22,24 @@ public class SnakeThread extends Thread{
 		this.gamePanel = gamePanel;
 	}
 
-	public void setRunning(boolean running){
-		this.running = running;
+	public void onResume() {
+		synchronized (pauseLock) {
+			paused = false;
+			pauseLock.notifyAll();
+		}
 	}
 	
-	public boolean getRunning(){
-		return running;
+	public void onPause() {
+		synchronized (pauseLock) {
+			paused = true;
+		}
 	}
 	
 	public void run(){
 		Canvas canvas;
 		long tickCount = 0L;
 		Log.d(TAG, "Starting game loop");
-		while (running){
+		while (true){
 			
 			canvas = null;
 			try{
@@ -46,8 +54,19 @@ public class SnakeThread extends Thread{
 			}
 			gamePanel.run();
 			tickCount++;
+			Log.d(TAG, "Game loop executed " + tickCount + " times");
+			
+			synchronized (pauseLock) {
+				while (paused) {
+					try {
+						pauseLock.wait();
+					} catch (InterruptedException e) {
+
+					}
+				}
+			}
 			
 		}
-		Log.d(TAG, "Game loop executed " + tickCount + " times");
+		
 	}
 }

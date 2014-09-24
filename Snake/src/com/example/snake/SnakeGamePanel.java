@@ -46,6 +46,8 @@ public class SnakeGamePanel extends SurfaceView implements
 	private double timerDelay;
 	private int spiderSpawningInterval;
 	private boolean paused;
+	private boolean gameIsRunning;
+	private boolean firstLaunch = true;
 
 	private int score;
 	private int highScore;
@@ -103,7 +105,8 @@ public class SnakeGamePanel extends SurfaceView implements
 	}
 
 	public void start() {
-		spiderSpawningInterval = 30;
+		
+		spiderSpawningInterval = 300;
 		if (lost) {
 			lost = false;
 		} else {
@@ -112,13 +115,13 @@ public class SnakeGamePanel extends SurfaceView implements
 		won = false;
 		wantToRestart = false;
 		restartDelay = 3;
-		timerDelay = 10;
-		requiredPlayerLength = 12;
+		timerDelay = 13 - level;//starts at 12
+		requiredPlayerLength = 15;
 		startingLength = 5;// length actually in snake class
 		numTeleports = 0;
-		numSpiders = 1;
-		numBarriers = 3;
-		numStrawberries = 9;
+		numSpiders = 0;
+		numBarriers = level -1;
+		numStrawberries = 11 - level; //should be maxLevel + 1 - level
 		numAISnakes = 0;
 
 		initaliseLevel();
@@ -174,14 +177,19 @@ public class SnakeGamePanel extends SurfaceView implements
 
 	// Settings that change how the difficulty increases with each level
 	public void goUpALevel() {
+		// if won, draw something else.
 		spiderSpawningInterval -= 30;
 		level++;
-		requiredPlayerLength++;
-		numStrawberries--;
-		// numAISnakes++;
-		// timerDelay--; //we want this
-		numSpiders++;
-		// numBarriers++;
+		//requiredPlayerLength++;
+		numStrawberries--; //problem with AI snakes?
+	//	if(level % 3 == 0)
+			//numAISnakes++; //add one every third level
+		timerDelay--; 
+	//	if(level % 3 == 1) //add one every second alternating with the snakes and barriers
+			//numSpiders++;
+	//	if(level % 3 == 2) //add one every second alternating with the snakes and spiders
+			 numBarriers++;
+		
 		// numTeleports++;
 
 		initaliseLevel();
@@ -357,7 +365,7 @@ public class SnakeGamePanel extends SurfaceView implements
 	}
 
 	public boolean checkGameWon() {
-		if (level > 8) {
+		if (level > 10) {
 			won = true;
 		}
 		return won;
@@ -374,16 +382,27 @@ public class SnakeGamePanel extends SurfaceView implements
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.d(TAG, "Surface Created");
-		if (!thread.getRunning()) {
-			thread.setRunning(true);
-			thread.start();
+		if(firstLaunch){
+			firstLaunch = false;
+			startThread();
 		}
+		
 	}
 
+	public void startThread(){
+		if (!gameIsRunning) {
+			Log.d(TAG, "Starting thread");
+			thread.start();
+			gameIsRunning = true;
+		} else {
+			thread.onResume();
+		}
+	}
+	
 	public void pause() {
-		boolean retry = true;
-		thread.setRunning(false);
-		while (retry) {
+		//boolean retry = true;
+		thread.onPause();
+		/*while (retry) {
 			try {
 				Log.d(TAG, "trying to pause " + retry);
 				thread.join();
@@ -396,21 +415,23 @@ public class SnakeGamePanel extends SurfaceView implements
 				Log.d(TAG, "Exception" + e.toString());
 			}
 			Log.d(TAG, "Pausing");
-		}
+		}*/
+		Log.d(TAG, "Pausing");
 	}
 
 	public void resume() {
 		Log.d(TAG, "Resuming" + paused);
 		setFocusable(true);
-		if (thread == null || !thread.getRunning()) {
+		thread.onResume();
+		/*if (thread == null || !thread.getRunning()) {
 			thread = new SnakeThread(getHolder(), this);
 			thread.setRunning(true);
 			thread.start();
-		}
+		}*/
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		boolean retry = true;
+		/*boolean retry = true;
 		thread.setRunning(false);
 		while (retry) {
 			try {
@@ -420,7 +441,7 @@ public class SnakeGamePanel extends SurfaceView implements
 			} catch (Exception e) {// normally interrupted
 				// keep trying again with the loop
 			}
-		}
+		}*/
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
@@ -435,9 +456,9 @@ public class SnakeGamePanel extends SurfaceView implements
 		// you wish to change direction
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			fingerDown = true;
-			// start.x = (int)event.getX();
-			// start.y = (int)event.getY();
-			sprite.handleActionDown((int) event.getX(), (int) event.getY());
+			start.x = (int)event.getX();
+			start.y = (int)event.getY();
+			//sprite.handleActionDown((int) event.getX(), (int) event.getY());
 		}
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			float x = event.getX();
@@ -445,30 +466,31 @@ public class SnakeGamePanel extends SurfaceView implements
 
 			// float dx = x - previousX;
 			// float dy = y = previousY;
-			start = new Point((int) previousX, (int) previousY);
-			end = new Point((int) x, (int) y);
+			//start = new Point((int) previousX, (int) previousY);
+			//end = new Point((int) x, (int) y);
 
 			if (sprite.isTouched()) {
-				sprite.setX((int) event.getX());
-				sprite.setY((int) event.getY());
+				//sprite.setX((int) event.getX());
+				//sprite.setY((int) event.getY());
 			}
 		}
 		if (event.getAction() == MotionEvent.ACTION_UP) {
-			// fingerDown = false;
-			// end.x = (int)event.getX();
-			// end.y = (int)event.getY();
+			fingerDown = false;
+			end.x = (int)event.getX();
+			end.y = (int)event.getY();
 			if (sprite.isTouched()) {
-				sprite.setTouched(false);
+				//sprite.setTouched(false);
 			}
 		}
 		snake.setDirectionWhenTouched(start, end);
-		previousX = end.x;
-		previousY = end.y;
+		//previousX = end.x;
+		//previousY = end.y;
 		return true;
 	}
 
 	protected void doDraw(Canvas canvas) {
 		if (paused) {
+			//Log.d(TAG, "Paused, won't draw >:(");
 			return;
 		}
 		canvas.drawColor(Color.BLACK);
@@ -490,7 +512,7 @@ public class SnakeGamePanel extends SurfaceView implements
 	public void drawWin(Canvas canvas, Paint paint) {
 		if (won) {
 			paint.setColor(Color.WHITE);
-			paint.setTextSize(30);
+			paint.setTextSize(40);
 
 			// the paint uses the point given as the center
 			paint.setTextAlign(Align.CENTER);
@@ -502,7 +524,7 @@ public class SnakeGamePanel extends SurfaceView implements
 	public void drawLost(Canvas canvas, Paint paint) {
 		if (lost) {
 			paint.setColor(Color.WHITE);
-			paint.setTextSize(30);
+			paint.setTextSize(40);
 			paint.setTextAlign(Align.CENTER);
 			canvas.drawText("You Lose!", screenArea.right / 2,
 					screenArea.bottom / 2, paint);
@@ -526,8 +548,8 @@ public class SnakeGamePanel extends SurfaceView implements
 
 	public void drawInfo(Canvas canvas, Paint paint) {
 		paint.setColor(Color.WHITE);
-		paint.setTextSize(20);
-		canvas.drawText("Level " + level, 6, 20, paint);
+		paint.setTextSize(30);
+		canvas.drawText("Level " + level, 6, 30, paint);
 	}
 
 	public void drawPlayer(Canvas canvas) {

@@ -16,7 +16,7 @@ public class SnakeAI extends Snake {
 
 		target = new Point(100, 100);
 		initialiseSnake(getRandomXPostion(), getRandomYPostion());
-		dieIfHitWall = true;
+		dieIfHitWall = false;
 	}
 
 	public Point getTarget() {

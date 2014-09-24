@@ -52,7 +52,7 @@ public class Barrier {
 	}
 
 	public int changeDirection(int currentDirection) {
-		if ((int) (Math.random() * 20) < BARRIER_CHANGE)
+		if ((int) (Math.random() * 40) < BARRIER_CHANGE)
 			currentDirection = createDirection(currentDirection);
 		return currentDirection;
 	}
