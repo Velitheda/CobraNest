@@ -1,8 +1,8 @@
-Snake
+Cobranest
 =====
 
 An android app of the classic Snake game
 
-This is a work in progress, but I have uploaded the eclipse project file.  You swipe to steer the snake, and you must avoid the green square that chases you and eat the red strawberries to go up a level.
+It is configured for Android Studio, and is nearly ready to release on the app store.  I just need to find a way to stop the blank activity screen showing briefly when it loads, and to stop an elusive bug where part of the wall dissapears when the snake crashes into it.
 
-There have bugs with the app crashing on resume, but I have now managed to solve them!
+Steer the snake by swiping in the direction you wish to go in with your finger.  Eat strawberries, avoid walls.
